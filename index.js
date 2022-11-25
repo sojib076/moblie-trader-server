@@ -54,7 +54,7 @@ const run = () => {
         })
         app.get('/sellerorder', async (req, res) => {
             const query = {selleremail: req.query.email };
-            const result = await allordersCollection.find(query).toArray();
+            const result = await allphonesCollection.find(query).toArray();
             res.send(result);
         })
         // get all orders by id 
@@ -80,6 +80,13 @@ const run = () => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await allphonesCollection.findOne(query)
+            res.send(result);
+        }) 
+
+        app.delete('/allphones/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            result = await allphonesCollection.deleteOne(query);
             res.send(result);
         })
 
@@ -119,7 +126,6 @@ const run = () => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
-            console.log(result);
         });
         app.get('/allusers', async (req, res) => {
             const query = { email: req.query.email };
