@@ -40,7 +40,26 @@ const run = () => {
             res.send(phones);
         })
         /// all orders api
-   
+        app.post('/allorders', async (req, res) => {
+            const order = req.body;
+            const result = await allordersCollection.insertOne(order);
+            res.send(result);
+        });
+
+        // get simgle phone user data by gmail
+        app.get('/allorders', async (req, res) => {
+            const query = { email: req.query.email };
+            const result = await allordersCollection.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/sellerorder', async (req, res) => {
+            const query = {selleremail: req.query.email };
+            const result = await allordersCollection.find(query).toArray();
+            res.send(result);
+        })
+        // get all orders by id 
+
+
 
     } finally {
 
