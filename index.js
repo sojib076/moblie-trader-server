@@ -59,6 +59,15 @@ const run = () => {
         })
         // get all orders by id 
 
+        app.get('/payment/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) };
+
+            const result = await allordersCollection.findOne(query);
+
+            res.send(result);
+        })
+        // add phones 
 
 
     } finally {
