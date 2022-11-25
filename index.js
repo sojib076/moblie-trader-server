@@ -84,7 +84,49 @@ const run = () => {
         })
 
 
- 
+        app.post('/create-payment', async (req, res) => {
+            const order = req.body;
+
+            const price = order.resalePrice;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card",
+                ]
+            })
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            });
+        })
+
+        app.post('/conpayment', async (req, res) => {
+           const  body = req.body;
+           console.log(body.id);
+           const moblie= await allphonesCollection.updateOne({_id:ObjectId(body.orderid)},{$set:{paid:"true"}})
+            const result = await allordersCollection.updateOne({ _id: ObjectId(body.id) }, { $set: { paid: "true" }});
+            console.log(result);
+        })
+        app.get('/allpayment/:id', async (req, res) => {
+         const id = req.params.id; 
+            const result = await paymentCollection.findOne({id:id});
+            res.send(result?true:false);
+        })
+
+        app.post('/addusers', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+            console.log(result);
+        });
+        app.get('/allusers', async (req, res) => {
+            const query = { email: req.query.email };
+            const result = await userCollection.findOne(query);
+            //  console.log(result);
+            res.send({role:result.role});
+        });
 
     } finally {
 
