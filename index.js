@@ -68,7 +68,23 @@ const run = () => {
             res.send(result);
         })
         // add phones 
+        app.post('/addphones', async (req, res) => {
+            const phone = req.body;
+            const result = await allphonesCollection.insertOne(phone);
+            res.send(result);
 
+        })
+        // get all phones
+
+        app.get('/allphones/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await allphonesCollection.findOne(query)
+            res.send(result);
+        })
+
+
+ 
 
     } finally {
 
