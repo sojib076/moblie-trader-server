@@ -21,7 +21,32 @@ const allordersCollection = client.db("webmoblie").collection("allorders");
 const paymentCollection = client.db("webmoblie").collection("payment");
 const userCollection = client.db("webmoblie").collection("user");
 
+const run = () => {
+    try {
 
+        //// get all categories
+        app.get('/categories', async (req, res) => {
+            const result = await categoriesCollection.find({}).toArray();
+            res.send(result);
+        })
+
+        // get  phones by category
+        app.get('/categories/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };;
+            const phonecategory = await categoriesCollection.findOne(query)
+            const phonequery = { category: phonecategory.category };
+            const phones = await allphonesCollection.find(phonequery).toArray();
+            res.send(phones);
+        })
+        /// all orders api
+   
+
+    } finally {
+
+    }
+
+}
 run()
 
 app.listen(port, () => {
