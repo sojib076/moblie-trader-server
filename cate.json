@@ -1,0 +1,71 @@
+[
+    {
+        "category": "samsung",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "time" : "2017-01-01 00:00:00"
+    },
+   
+    {
+        "category": "samsung",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "time" : "2017-01-01 00:00:00"
+    },
+   
+    {
+        "category": "samsung",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "time" : "2017-01-01 00:00:00"
+    },
+   
+    {
+        "category": "iphone",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "time" : "2017-01-01 00:00:00"
+    },
+    {
+        "category": "iphone",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "time" : "2017-01-01 00:00:00"
+    },
+    {
+        "category": "iphone",
+        "name": "Samsung Galaxy S7 Edge",
+        "location": "Bucharest",
+        "resalePrice" : 10000,
+        "originalPrice" : 100000,
+        "picture" : "https://i.ibb.co/BPQWPry/samsung-galaxy-s7-edge.jpg",
+        "yearsOfUse": 1,
+        "sellerName" : "John Doe",
+        "time" : "2017-01-01 00:00:00"
+    }
+]
