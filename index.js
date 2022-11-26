@@ -178,6 +178,21 @@ const run = () => {
             const result =  await userCollection.find(query).toArray();
             res.send(result);
         })
+        app.delete('/userdlt/:id', async (req, res) => {
+
+            const id=req.params.id;
+            const query = { _id: ObjectId(id) };
+            result = await userCollection.deleteOne(query);
+            res.send(result);
+
+        })
+        app.post('/veryfy:/:id', async (req, res) => {
+
+            const id=req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await userCollection.updateOne(query, { $set: { verify: true} });
+
+        })
 
 
     } finally {
