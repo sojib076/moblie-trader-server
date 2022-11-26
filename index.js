@@ -9,16 +9,19 @@ const stripe = require('stripe')('sk_test_51M6C3VDgKvWy1pBDGOeGI1buEk3WTmBlOAQUs
 /// express middleware
 app.use(cors());
 app.use(express.json());
+// require dotenv
+require('dotenv').config();
 
+console.log(process.Dbpass);
+console.log(process.env.stripecode_code);
+console.log(process.env.Dbuser);
 
-
-
-const uri = "mongodb+srv://webmoblie:webmoblie@cluster0.pucpolg.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.Dbuser}}:${process.env.Dbpass}@cluster0.pucpolg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const categoriesCollection = client.db("webmoblie").collection("categories");
 const allphonesCollection = client.db("webmoblie").collection("allphones");
 const allordersCollection = client.db("webmoblie").collection("allorders");
-const paymentCollection = client.db("webmoblie").collection("payment");
+const paymentCollection = client.db("webmoblie").collection("promote");
 const userCollection = client.db("webmoblie").collection("user");
 
 const run = () => {
@@ -52,6 +55,10 @@ const run = () => {
             const result = await allordersCollection.find(query).toArray();
             res.send(result);
         })
+        // app.get('/sojib' ,async (req,res) => {
+        //     const result = await allordersCollection.find({}).toArray();
+        //     res.send(result);
+        // })
         app.get('/sellerorder', async (req, res) => {
             const query = {selleremail: req.query.email };
             const result = await allphonesCollection.find(query).toArray();
@@ -89,6 +96,20 @@ const run = () => {
             result = await allphonesCollection.deleteOne(query);
             res.send(result);
         })
+        // get all phones
+        app.post('/promote', async (req, res) => {
+            const promote = req.body;
+            const moblie= await allphonesCollection.updateOne({_id:ObjectId(promote.id)},{$set:{promote:"true"}})
+            res.send(moblie);
+           console.log(moblie);
+        });
+        app.get('/promote', async (req, res) => {
+        const fillter ={
+            promote:"true",
+        } 
+        const result = await allphonesCollection.find(fillter).toArray();
+        res.send(result);
+        });
 
 
         app.post('/create-payment', async (req, res) => {
@@ -116,11 +137,7 @@ const run = () => {
             const result = await allordersCollection.updateOne({ _id: ObjectId(body.id) }, { $set: { paid: "true" }});
             console.log(result);
         })
-        app.get('/allpayment/:id', async (req, res) => {
-         const id = req.params.id; 
-            const result = await paymentCollection.findOne({id:id});
-            res.send(result?true:false);
-        })
+   
 
         app.post('/addusers', async (req, res) => {
             const user = req.body;
@@ -133,6 +150,7 @@ const run = () => {
             //  console.log(result);
             res.send({role:result.role});
         });
+        
 
     } finally {
 
