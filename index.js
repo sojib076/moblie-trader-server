@@ -5,24 +5,38 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 jwt = require('jsonwebtoken');
 // require stripe
-const stripe = require('stripe')('sk_test_51M6C3VDgKvWy1pBDGOeGI1buEk3WTmBlOAQUs1Cnjn5MMwR5IixBLwhnXLPi9XoTNInxkIsAN4WBgTRQr2o35LNT00cpzsXDEk');
+const stripe = require('stripe')(process.env.stripecode_code);
 /// express middleware
 app.use(cors());
 app.use(express.json());
 // require dotenv
 require('dotenv').config();
 
-console.log(process.Dbpass);
-console.log(process.env.stripecode_code);
-console.log(process.env.Dbuser);
 
-const uri = `mongodb+srv://${process.env.Dbuser}}:${process.env.Dbpass}@cluster0.pucpolg.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.Dbuser}:${process.env.Dbpass}@cluster0.pucpolg.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const categoriesCollection = client.db("webmoblie").collection("categories");
 const allphonesCollection = client.db("webmoblie").collection("allphones");
 const allordersCollection = client.db("webmoblie").collection("allorders");
-const paymentCollection = client.db("webmoblie").collection("promote");
 const userCollection = client.db("webmoblie").collection("user");
+
+
+console.log(uri);
+function verifyjwt(req, res, next) {
+  console.log(req.headers.authorization);
+    const authheader = req.headers.authorization;
+    if (!authheader) {
+        return res.status(401).send('unauthorized access');
+    }
+    const token = authheader.split(' ')[1];
+    jwt.verify(token, process.env.access_token, function (error, decoded) {
+        if (error) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
 
 const run = () => {
     try {
@@ -60,7 +74,7 @@ const run = () => {
         //     res.send(result);
         // })
         app.get('/sellerorder', async (req, res) => {
-            const query = {selleremail: req.query.email };
+            const query = { selleremail: req.query.email };
             const result = await allphonesCollection.find(query).toArray();
             res.send(result);
         })
@@ -88,7 +102,7 @@ const run = () => {
             const query = { _id: ObjectId(id) };
             const result = await allphonesCollection.findOne(query)
             res.send(result);
-        }) 
+        })
 
         app.delete('/allphones/:id', async (req, res) => {
             const id = req.params.id;
@@ -99,16 +113,16 @@ const run = () => {
         // get all phones
         app.post('/promote', async (req, res) => {
             const promote = req.body;
-            const moblie= await allphonesCollection.updateOne({_id:ObjectId(promote.id)},{$set:{promote:"true"}})
+            const moblie = await allphonesCollection.updateOne({ _id: ObjectId(promote.id) }, { $set: { promote: "true" } })
             res.send(moblie);
-           console.log(moblie);
+            console.log(moblie);
         });
         app.get('/promote', async (req, res) => {
-        const fillter ={
-            promote:"true",
-        } 
-        const result = await allphonesCollection.find(fillter).toArray();
-        res.send(result);
+            const fillter = {
+                promote: "true",
+            }
+            const result = await allphonesCollection.find(fillter).toArray();
+            res.send(result);
         });
 
 
@@ -131,26 +145,42 @@ const run = () => {
         })
 
         app.post('/conpayment', async (req, res) => {
-           const  body = req.body;
-           console.log(body.id);
-           const moblie= await allphonesCollection.updateOne({_id:ObjectId(body.orderid)},{$set:{paid:"true"}})
-            const result = await allordersCollection.updateOne({ _id: ObjectId(body.id) }, { $set: { paid: "true" }});
-            console.log(result);
+            const body = req.body;
+            console.log(body.id);
+            const moblie = await allphonesCollection.updateOne({ _id: ObjectId(body.orderid) }, { $set: { paid: "true" } })
+            const result = await allordersCollection.updateOne({ _id: ObjectId(body.id) }, { $set: { paid: "true" } });
+    
         })
-   
+
 
         app.post('/addusers', async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
         });
-        app.get('/allusers', async (req, res) => {
+        app.get('/allusers', verifyjwt,async (req, res) => {
+            
             const query = { email: req.query.email };
+            if (req.query.email !== req.decoded.email) {
+                    return res.status(403).send({ message: 'forbidden access' })
+            }
             const result = await userCollection.findOne(query);
             //  console.log(result);
-            res.send({role:result.role});
+            res.send({ role: result.role });
         });
         
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            console.log(email);
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.access_token)
+                return res.send({ mTToken: token });
+            }
+            res.status(403).send({mTToken: '', message: 'You  are not allow ' })
+        });
+
 
     } finally {
 
