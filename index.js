@@ -5,7 +5,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 jwt = require('jsonwebtoken');
 // require stripe
-const stripe = require('stripe')(process.env.stripecode_code);
+const stripe = require('stripe')("sk_test_51M6C3VDgKvWy1pBDGOeGI1buEk3WTmBlOAQUs1Cnjn5MMwR5IixBLwhnXLPi9XoTNInxkIsAN4WBgTRQr2o35LNT00cpzsXDEk");
 /// express middleware
 app.use(cors());
 app.use(express.json());
@@ -69,10 +69,7 @@ const run = () => {
             const result = await allordersCollection.find(query).toArray();
             res.send(result);
         })
-        // app.get('/sojib' ,async (req,res) => {
-        //     const result = await allordersCollection.find({}).toArray();
-        //     res.send(result);
-        // })
+
         app.get('/sellerorder', async (req, res) => {
             const query = { selleremail: req.query.email };
             const result = await allphonesCollection.find(query).toArray();
@@ -157,24 +154,30 @@ const run = () => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
+           
         });
         app.get('/allusers', async (req, res) => {
             const query = { email: req.query.email };
             const result = await userCollection.findOne(query);
-            //  console.log(result);
-            res.send({ role: result.role });
+            res.send({ role:result.role});
         });
         
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
-            const query = { email: email };
-            const user = await userCollection.findOne(query);
-            if (user) {
                 const token = jwt.sign({ email }, process.env.access_token)
                 return res.send({ mTToken: token });
-            }
-            res.status(403).send({mTToken: '', message: 'You  are not allow ' })
+         
         });
+        app.get('/buyer', async(req,res)=>{
+            const query = { role: "Buyer" };
+            const result =  await userCollection.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/seller', async(req,res)=>{
+            const query = { role: "Seller" };
+            const result =  await userCollection.find(query).toArray();
+            res.send(result);
+        })
 
 
     } finally {
