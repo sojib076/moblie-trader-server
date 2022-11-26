@@ -23,7 +23,7 @@ const userCollection = client.db("webmoblie").collection("user");
 
 console.log(uri);
 function verifyjwt(req, res, next) {
-  console.log(req.headers.authorization);
+
     const authheader = req.headers.authorization;
     if (!authheader) {
         return res.status(401).send('unauthorized access');
@@ -149,7 +149,7 @@ const run = () => {
             console.log(body.id);
             const moblie = await allphonesCollection.updateOne({ _id: ObjectId(body.orderid) }, { $set: { paid: "true" } })
             const result = await allordersCollection.updateOne({ _id: ObjectId(body.id) }, { $set: { paid: "true" } });
-    
+            console.log(result);
         })
 
 
@@ -158,12 +158,8 @@ const run = () => {
             const result = await userCollection.insertOne(user);
             res.send(result);
         });
-        app.get('/allusers', verifyjwt,async (req, res) => {
-            
+        app.get('/allusers', async (req, res) => {
             const query = { email: req.query.email };
-            if (req.query.email !== req.decoded.email) {
-                    return res.status(403).send({ message: 'forbidden access' })
-            }
             const result = await userCollection.findOne(query);
             //  console.log(result);
             res.send({ role: result.role });
@@ -171,7 +167,6 @@ const run = () => {
         
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
             const query = { email: email };
             const user = await userCollection.findOne(query);
             if (user) {
