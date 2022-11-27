@@ -23,21 +23,21 @@ const reportCollection = client.db("webmoblie").collection("reported");
 
 
 console.log(uri);
-function verifyjwt(req, res, next) {
+// function verifyjwt(req, res, next) {
 
-    const authheader = req.headers.authorization;
-    if (!authheader) {
-        return res.status(401).send('unauthorized access');
-    }
-    const token = authheader.split(' ')[1];
-    jwt.verify(token, process.env.access_token, function (error, decoded) {
-        if (error) {
-            return res.status(403).send({ message: 'forbidden access' })
-        }
-        req.decoded = decoded;
-        next();
-    })
-}
+//     const authheader = req.headers.authorization;
+//     if (!authheader) {
+//         return res.status(401).send('unauthorized access');
+//     }
+//     const token = authheader.split(' ')[1];
+//     jwt.verify(token, process.env.access_token, function (error, decoded) {
+//         if (error) {
+//             return res.status(403).send({ message: 'forbidden access' })
+//         }
+//         req.decoded = decoded;
+//         next();
+//     })
+// }
 
 const run = () => {
     try {
@@ -70,18 +70,16 @@ const run = () => {
             const result = await allordersCollection.find(query).toArray();
             res.send(result);
         })
-
+        // getin all seller order 
         app.get('/sellerorder', async (req, res) => {
             const query = { selleremail:req.query.email };
             const result = await allphonesCollection.find(query).toArray();
             res.send(result);
         })
         // get all orders by id 
-
         app.get('/payment/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) };
-
             const result = await allordersCollection.findOne(query);
 
             res.send(result);
@@ -94,7 +92,6 @@ const run = () => {
 
         })
         // get all phones
-
         app.get('/allphones/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -108,13 +105,14 @@ const run = () => {
             result = await allphonesCollection.deleteOne(query);
             res.send(result);
         })
-        // get all phones
+        // promote  phone using id
         app.post('/promote', async (req, res) => {
             const promote = req.body;
             const moblie = await allphonesCollection.updateOne({ _id: ObjectId(promote.id) }, { $set: { promote: "true" } })
             res.send(moblie);
             console.log(moblie);
         });
+        //get promte phone on home page 
         app.get('/promote', async (req, res) => {
             const fillter = {
                 promote: "true",
@@ -123,7 +121,7 @@ const run = () => {
             res.send(result);
         });
 
-
+            /// create paymet api 
         app.post('/create-payment', async (req, res) => {
             const order = req.body;
 
@@ -142,6 +140,7 @@ const run = () => {
             });
         })
 
+        /// api for comfrom payment and update it status
         app.post('/conpayment', async (req, res) => {
             const body = req.body;
             console.log(body.id);
@@ -150,50 +149,40 @@ const run = () => {
             console.log(result);
         })
 
-
+        // adding user api 
         app.post('/addusers', async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
            
         });
+        // get user by email
         app.get('/allusers', async (req, res) => {
             const query = { email: req.query.email };
             const result = await userCollection.findOne(query);
             res.send({ role:result.role});
         });
-        
-        app.get('/jwt', async (req, res) => {
-            const email = req.query.email;
-                const token = jwt.sign({ email }, process.env.access_token)
-                return res.send({ mTToken: token });
-         
-        });
+
+        //get all buyer by role 
         app.get('/buyer', async(req,res)=>{
             const query = { role: "Buyer" };
             const result =  await userCollection.find(query).toArray();
             res.send(result);
         })
+        //get all seller by role
         app.get('/seller', async(req,res)=>{
             const query = { role: "Seller" };
             const result =  await userCollection.find(query).toArray();
             res.send(result);
         })
+        ///  get verify seller by email 
         app.get('/verifyseller',async(req,res)=>{
             const email = req.query.email;
             const query = {email:email};
             const result =  await userCollection.findOne(query);
             res.send(result);
         })
-
-        app.delete('/userdlt/:id', async (req, res) => {
-
-            const id=req.params.id;
-            const query = { _id: ObjectId(id) };
-            result = await userCollection.deleteOne(query);
-            res.send(result);
-
-        })
+        // post verify seller by email
         app.post('/verify', async (req, res) => {
             const email=req.body.email;
             console.log(email);
@@ -202,17 +191,28 @@ const run = () => {
             console.log(result);
             res.send(result);
         })
+            // delete user by id
+        app.delete('/userdlt/:id', async (req, res) => {
+            const id=req.params.id;
+            const query = { _id: ObjectId(id) };
+            result = await userCollection.deleteOne(query);
+            res.send(result);
 
+        })
+    
+/// report product api
         app.post('/report', async (req, res) => {
             const report = req.body;
             console.log(report);
             const result = await reportCollection.insertOne(report);
             res.send(result);
         })
+        // get all report
         app.get('/report', async (req, res) => {
             const result = await reportCollection.find({}).toArray();
             res.send(result);
         })
+        // delete report by id
         app.delete('/report/:reportid', async (req, res) => {
                 const id = req.params.reportid;
                 const query = { _id:ObjectId(id) };
@@ -221,6 +221,13 @@ const run = () => {
                 console.log(result);
             res.send(result);
         })
+                // jwt token send to clilnet side
+                app.get('/jwt', async (req, res) => {
+                    const email = req.query.email;
+                        const token = jwt.sign({ email }, process.env.access_token)
+                        return res.send({ mTToken: token });
+                 
+                });
 
 
     } finally {
