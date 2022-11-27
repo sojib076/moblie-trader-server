@@ -19,6 +19,7 @@ const categoriesCollection = client.db("webmoblie").collection("categories");
 const allphonesCollection = client.db("webmoblie").collection("allphones");
 const allordersCollection = client.db("webmoblie").collection("allorders");
 const userCollection = client.db("webmoblie").collection("user");
+const reportCollection = client.db("webmoblie").collection("reported");
 
 
 console.log(uri);
@@ -71,7 +72,7 @@ const run = () => {
         })
 
         app.get('/sellerorder', async (req, res) => {
-            const query = { selleremail: req.query.email };
+            const query = { selleremail:req.query.email };
             const result = await allphonesCollection.find(query).toArray();
             res.send(result);
         })
@@ -189,9 +190,29 @@ const run = () => {
         app.post('/veryfy:/:id', async (req, res) => {
 
             const id=req.params.id;
-            const query = { _id: ObjectId(id) };
+            const query = { _id: ObjectId(id)};
             const result = await userCollection.updateOne(query, { $set: { verify: true} });
 
+        })
+        app.post('/report', async (req, res) => {
+            const report = req.body;
+            console.log(report);
+            const result = await reportCollection.insertOne(report);
+            res.send(result);
+        })
+        app.get('/report', async (req, res) => {
+            const result = await reportCollection.find({}).toArray();
+            res.send(result);
+        })
+        app.delete('/report/:reportid', async (req, res) => {
+                const id = req.params.reportid;
+             
+                const query = { _id:ObjectId(id) };
+
+                const report = await reportCollection.deleteOne({reportid:id});
+                result = await allphonesCollection.deleteOne(query);
+                console.log(result);
+            res.send(result);
         })
 
 
