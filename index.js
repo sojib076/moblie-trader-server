@@ -179,6 +179,13 @@ const run = () => {
             const result =  await userCollection.find(query).toArray();
             res.send(result);
         })
+        app.get('/verifyseller',async(req,res)=>{
+            const email = req.query.email;
+            const query = {email:email};
+            const result =  await userCollection.findOne(query);
+            res.send(result);
+        })
+
         app.delete('/userdlt/:id', async (req, res) => {
 
             const id=req.params.id;
@@ -187,13 +194,15 @@ const run = () => {
             res.send(result);
 
         })
-        app.post('/veryfy:/:id', async (req, res) => {
-
-            const id=req.params.id;
-            const query = { _id: ObjectId(id)};
+        app.post('/verify', async (req, res) => {
+            const email=req.body.email;
+            console.log(email);
+            const query = { email: email };
             const result = await userCollection.updateOne(query, { $set: { verify: true} });
-
+            console.log(result);
+            res.send(result);
         })
+
         app.post('/report', async (req, res) => {
             const report = req.body;
             console.log(report);
@@ -206,9 +215,7 @@ const run = () => {
         })
         app.delete('/report/:reportid', async (req, res) => {
                 const id = req.params.reportid;
-             
                 const query = { _id:ObjectId(id) };
-
                 const report = await reportCollection.deleteOne({reportid:id});
                 result = await allphonesCollection.deleteOne(query);
                 console.log(result);
