@@ -23,21 +23,21 @@ const reportCollection = client.db("webmoblie").collection("reported");
 
 
 console.log(uri);
-// function verifyjwt(req, res, next) {
+function verifyjwt(req, res, next) {
 
-//     const authheader = req.headers.authorization;
-//     if (!authheader) {
-//         return res.status(401).send('unauthorized access');
-//     }
-//     const token = authheader.split(' ')[1];
-//     jwt.verify(token, process.env.access_token, function (error, decoded) {
-//         if (error) {
-//             return res.status(403).send({ message: 'forbidden access' })
-//         }
-//         req.decoded = decoded;
-//         next();
-//     })
-// }
+    const authheader = req.headers.authorization;
+    if (!authheader) {
+        return res.status(401).send('unauthorized access');
+    }
+    const token = authheader.split(' ')[1];
+    jwt.verify(token, process.env.access_token, function (error, decoded) {
+        if (error) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
 
 const run = () => {
     try {
@@ -65,12 +65,17 @@ const run = () => {
         });
 
         // get simgle phone user data by gmail
-        app.get('/allorders', async (req, res) => {
+        app.get('/allorders', verifyjwt, async (req, res) => {
+            const decodedemail = req.decoded.email; 
+            if (req.query.email !== decodedemail) {
+            return res.status(403).send({ message: 'forbidden access' })
+            }
             const query = { email: req.query.email };
             const result = await allordersCollection.find(query).toArray();
             res.send(result);
         })
         // getin all seller order 
+        
         app.get('/sellerorder', async (req, res) => {
             const query = { selleremail:req.query.email };
             const result = await allphonesCollection.find(query).toArray();
