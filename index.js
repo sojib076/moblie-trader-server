@@ -5,7 +5,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 jwt = require('jsonwebtoken');
 // require stripe
-const stripe = require('stripe')("sk_test_51M6C3VDgKvWy1pBDGOeGI1buEk3WTmBlOAQUs1Cnjn5MMwR5IixBLwhnXLPi9XoTNInxkIsAN4WBgTRQr2o35LNT00cpzsXDEk");
+const stripe = require('stripe')(Process.env.stripe_secret_key);
 /// express middleware
 app.use(cors());
 app.use(express.json());
